@@ -8,7 +8,7 @@ cyan="$(tput setaf 6)"
 
 set -euo pipefail
 
-BASE_DIR="$HOME/xlsx4leaflet"
+BASE_DIR="$HOME/berlin_conservatories_1900"
 TEMP_DIR="$BASE_DIR/template"
 
 while true; do
