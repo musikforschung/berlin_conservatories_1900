@@ -1,0 +1,187 @@
+#xlsx4leaflet.fix
+
+#latitude
+if any_match(latitude,'^-?\d{1,3}\.\d+$')
+   copy(latitude,result.0)
+   append(result.0,",")
+end
+#longitude
+if any_match(longitude,"^-?\d{1,3}\.\d+$")
+   copy_field(longitude,result.1)
+   append(result.1,',"')
+end
+
+##paragraph1
+#preferredName
+if any_match(preferredName,'\w+')
+   copy(preferredName,p1_name)
+end
+#dateOfEstablishment
+if any_match(dateOfEstablishment,'\d.*')
+   copy(dateOfEstablishment,p1_date.0)
+end
+#dateOfTermination
+if any_match(dateOfTermination,'\d.*')
+   copy(dateOfTermination,p1_date.1)
+end
+if exists(p1_date.0)
+   if exists(p1_date.1)
+      join_field(p1_date,"-")
+   end
+end
+#dateOfEvent
+if any_match(dateOfEvent,'\d.*')
+   copy_field(dateOfEvent,p1_date)
+end
+if any_match(country,'.*')
+    copy(country,p1_addr.0)
+end
+if any_match(street,'.*')
+    copy(street,p1_addr.1.0)
+end
+if any_match(streetNumber,'\d.*')
+    copy(streetNumber,p1_addr.1.1)
+end
+join_field(p1_addr.1," ")
+if exists(p1_addr.0)
+   if exists(p1_addr.1)
+      join_field(p1_addr," | ")
+   else
+      join_field(p1_addr," ")
+   end
+end
+#merge paragraph1
+if exists(p1_name)
+    copy(p1_name,paragraph1.0.$append)
+    if exists(p1_date)
+	   copy(p1_date,paragraph1.0.$append)
+	   join_field(paragraph1.0," | ")
+    end
+end
+prepend(paragraph1.0,"<b>")
+append(paragraph1.0,"</b>")
+
+if exists(p1_addr)
+    copy(p1_addr,paragraph1.1)
+end
+#html-tags paragraph1
+join_field(paragraph1,"<br>")
+if exists(paragraph1)
+    prepend(paragraph1,"<p>")
+    append(paragraph1,"</p>")
+end
+
+##paragraph2
+if any_match(biographicalOrHistoricalInformation,'.*')
+    copy(biographicalOrHistoricalInformation,paragraph2)
+    prepend(paragraph2,"<p>")
+    append(paragraph2,"</p>")
+end
+
+##paragraph3
+#name
+if any_match(depictionName,'.*')
+   copy(depictionName,p3_img.0.1)
+end
+if any_match(p3_img.0.1,"http.*")
+   set_field(p3_img.0.0,"<img src=")
+   set_field(p3_img.0.2,">")
+else
+   add_field(p3_img_dim.0,"<img width=")
+   copy_field(depictionWidth,p3_img_dim.1)
+   set_field(p3_img_dim.2," hight=")
+   copy_field(depictionHight,p3_img_dim.3)
+   set_field(p3_img_dim.4," src=img/")
+   join_field(p3_img_dim,'')
+   move_field(p3_img_dim,p3_img.0.0)
+   set_field(p3_img.0.2,".")
+   copy_field(depictionFormat,p3_img.0.3)
+   append(p3_img.0.3,">")
+end
+join_field(p3_img.0)
+join_field(p3_img)
+##meta
+#text
+if any_match(depictionText,'.*')
+   copy(depictionText,p3_meta.0)
+end
+#creator
+if any_match(depictionCreator,'\w.*')
+   copy(depictionCreator,p3_meta.1.$append)
+   prepend(p3_meta.1.0,"Urheber*in: ") 
+end
+#source
+if any_match(depictionSource,"http.*")
+   copy(depictionSource,p3_meta.2.0)
+end
+#publisher 
+if any_match(depictionPublisher,'.*')
+   copy(depictionPublisher,p3_meta.2.1)
+end
+if exists(p3_meta.2.0)
+   if exists(p3_meta.2.1)
+      prepend(p3_meta.2.0,"<a href='")
+      prepend(p3_meta.2.1,"' target='_blank'>")
+      append(p3_meta.2.1,"</a>")
+      join_field(p3_meta.2," ")
+   end
+end
+prepend(p3_meta.2,"Quelle: ") 
+if exists(p3_meta.1)
+   if exists(p3_meta.2)
+      move(p3_meta.2,p3_meta.1.$append)
+	  join_field(p3_meta.1," | ")
+   end
+end
+join(p3_meta,"<br>")
+#img
+if exists(p3_img)
+    copy(p3_img,paragraph3.0)
+end
+if exists(p3_meta)
+    copy(p3_meta,paragraph3.1)
+end
+#html-tags paragraph3
+join_field(paragraph3,"<br>")
+if exists(paragraph3)
+    prepend(paragraph3,"<p>")
+    append(paragraph3,"</p>")
+end
+
+##paragraph4
+if any_match(sameAsURL,"http.*")
+   copy(sameAsURL,p4_link.0)
+   prepend(p4_link.0,"<a href='")
+   if any_match(sameAsName,'.*')
+      copy(sameAsName,p4_link.1)
+	  prepend(p4_link.1,"' target='_blank'>")
+      append(p4_link.1,"</a>")
+      join_field(p4_link,"")
+    end
+end
+copy(p4_link,paragraph4)
+
+#merge paragraphs
+copy(paragraph1,final.0)
+copy(paragraph2,final.1)
+copy(paragraph3,final.2)
+copy(paragraph4,final.3)
+
+join_field(final,"")
+
+copy(final,result.2.0)
+replace_all(result.2.0,'"','\\"')
+copy(preferredName,result.2.1)
+prepend(result.2.1,'","')
+append(result.2.1,'",')
+set_field(result.2.2,'"3ec400"')
+join_field(result.2,"")
+
+
+join_field(result,"")
+prepend(result,"[")
+append(result,"],")
+
+move_field(result,tmp)
+vacuum()
+retain(tmp)
