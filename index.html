@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta charset="UTF-8">
-	<title>The Conservatories of Berlin around 1900</title>
+	<title>berlin_conservatories_1900</title>
 
 	<link rel="stylesheet" href="./leaflet/lib/mapbox.css" />
 	<script src="./leaflet/lib/mapbox.js"></script>
@@ -64,8 +64,8 @@ var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Additional layer for historical map - can be modified or deactivated
-var berlin1904 = L.tileLayer('https://warper.wmflabs.org/maps/tile/3861/{z}/{x}/{y}.png', {
-    layers: 'berlin1904',
+var berlin1925 = L.tileLayer('https://warper.wmflabs.org/maps/tile/1145/{z}/{x}/{y}.png', {
+    layers: 'berlin1925',
     format: 'image/png',
     transparent: true,
 	maxZoom: 16,
@@ -78,7 +78,7 @@ var baseMaps = {
     "OpenStreetMap": osm
 };
 var overlayMaps = {
-    "Berlin um 1904": berlin1904,
+    "Berlin um 1925": berlin1925,
 		
 };
 
