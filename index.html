@@ -64,7 +64,9 @@ var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 // Additional layer for historical map - can be modified or deactivated
-var berlin1925 = L.tileLayer('https://warper.wmflabs.org/maps/tile/1145/{z}/{x}/{y}.png', {
+// warper.wmf is currently out of service - alternative service chosen (10.11.1925): mapwarper.net
+//var berlin1925 = L.tileLayer('https://warper.wmflabs.org/maps/tile/1145/{z}/{x}/{y}.png', {
+var berlin1925 = L.tileLayer('https://mapwarper.net/maps/tile/47875/{z}/{x}/{y}.png ', {
     layers: 'berlin1925',
     format: 'image/png',
     transparent: true,
